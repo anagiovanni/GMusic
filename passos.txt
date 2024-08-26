@@ -1,0 +1,18 @@
+*Configuração da conta local do GIT:
+git config --global user.name anagiovanni
+git config --global user.email anagiovanni66@gmail.com
+
+*criar projeto 
+npx create-expo-app@latest GMusic --template blank
+cd GMusic
+
+*Executar o projeto 
+npx expo start --localhost --android
+npm i
+
+*Instalar os pacotes necessarios:
+npx expo install react-dom react-native-web @expo/metro-runtime
+npx expo install @react-native-community/slider
+npx expo install expo-av
+
+Instalar extensão do React
