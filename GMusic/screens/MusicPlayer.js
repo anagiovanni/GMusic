@@ -95,7 +95,7 @@ const MusicPlayer = () => {
 
   const stop = async () => {
     if (sound) {
-      await sound.pauseAsync();
+      await sound.stopAsync();
       sound.unloadAsync();
       await loadSound();
     }
@@ -160,11 +160,11 @@ const MusicPlayer = () => {
         <View>
           <Slider
             style={styles.progressBar}
-            value={songStatus ? setSongStatus.positionMillis: 0}
+            value={songStatus ? songStatus.positionMillis: 0}
             minimumValue={0}
-            maximumValue={songStatus ? setSongStatus.durationMillis : 0}
+            maximumValue={songStatus ? songStatus.durationMillis : 0}
             thumbTintColor='#FFD369'
-            minimumTrackIntColor='#FFD369'
+            minimumTrackTintColor='#FFD369'
             maximumTrackTintColor='#FFF'
             onSlidingComplete={(value) => {
                 sound.setPositionAsync(value);
@@ -173,15 +173,16 @@ const MusicPlayer = () => {
           <View style={styles.progressLevelDuration}>
             <Text style={styles.progressLabelText}>
               {songStatus ? 
-                (`${Math.floor(songStatus.positionMillis / 1000 / 60)}:${String(Math.floor(((songStatus.positionMillis / 1000) % 60))).padStart(2, "0") })`
+                (`${Math.floor(songStatus.positionMillis / 1000 / 60)}:${String(Math.floor(((songStatus.positionMillis / 1000) % 60))).padStart(2, "0")}`
                 ) : "00:00"
               }
             </Text>
             <Text style={styles.progressLabelText}> 
               {songStatus ? 
-                (`${Math.floor(songStatus.durationMillis / 1000 / 60)}:${String(Math.floor(((songStatus.durationMillis / 1000) % 60))).padStart(2, "0") })`
+                (`${Math.floor(songStatus.durationMillis / 1000 / 60)}:${String(Math.floor((songStatus.durationMillis / 1000) % 60)).padStart(2, "0") }`
                 ) : "00:00"
-              }</Text>
+              }
+              </Text>
           </View>
         </View>
 
@@ -190,7 +191,7 @@ const MusicPlayer = () => {
             <Ionicons name='play-skip-back-outline' size={35} color="#FFD369"></Ionicons>
           </TouchableOpacity>
           <TouchableOpacity onPress={(handlePlayPause)}>
-            <Ionicons name='pause-circle' size={75} color="#FFD369"></Ionicons>
+            <Ionicons name={isPlaying ? "pause-circle" : "play-circle"} size={75} color="#FFD369"></Ionicons>
           </TouchableOpacity>
           <TouchableOpacity onPress={(skipToNext)}>
             <Ionicons name='play-skip-forward-outline' size={35} color="#FFD369"></Ionicons>
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
     width: 340,
     height: 40,
     marginTop: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   progressLevelDuration: {
     width: 340,
