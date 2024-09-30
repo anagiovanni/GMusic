@@ -20,8 +20,8 @@ const { width, height } = Dimensions.get('window');
 const MusicPlayer = () => {
   const [sound, setSound] = useState(null);
   const [songIndex, setSongIndex] = useState(0);
-  const [songStatus, setSongStatus] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(0);
+  const [songStatus, setSongStatus] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const songSlider = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -37,9 +37,7 @@ const MusicPlayer = () => {
     return (
       <Animated.View style={styles.mainImageWrapper}>
         <View style={[styles.imageWrapper, styles.elevation]}>
-          <Image
-            source={item.artwork}
-            style={styles.musicImage} />
+          <Image source={item.artwork} style={styles.musicImage} />
         </View>
       </Animated.View>
     )
@@ -92,6 +90,14 @@ const MusicPlayer = () => {
     if (sound) {
       setIsPlaying(true);
       await sound.playAsync();
+    }
+  }
+
+  const stop = async () => {
+    if (sound) {
+      await sound.pauseAsync();
+      sound.unloadAsync();
+      await loadSound();
     }
   }
 
@@ -154,9 +160,9 @@ const MusicPlayer = () => {
         <View>
           <Slider
             style={styles.progressBar}
-            value={10}
+            value={songStatus ? setSongStatus.positionMillis: 0}
             minimumValue={0}
-            maximumValue={100}
+            maximumValue={songStatus ? setSongStatus.durationMillis : 0}
             thumbTintColor='#FFD369'
             minimumTrackIntColor='#FFD369'
             maximumTrackTintColor='#FFF'
@@ -167,11 +173,15 @@ const MusicPlayer = () => {
           <View style={styles.progressLevelDuration}>
             <Text style={styles.progressLabelText}>
               {songStatus ? 
-                (`$(Math.floor(songStatus.positionMillis / 1000 / 60)})`
+                (`${Math.floor(songStatus.positionMillis / 1000 / 60)}:${String(Math.floor(((songStatus.positionMillis / 1000) % 60))).padStart(2, "0") })`
                 ) : "00:00"
               }
             </Text>
-            <Text style={styles.progressLabelText}>00:00</Text>
+            <Text style={styles.progressLabelText}> 
+              {songStatus ? 
+                (`${Math.floor(songStatus.durationMillis / 1000 / 60)}:${String(Math.floor(((songStatus.durationMillis / 1000) % 60))).padStart(2, "0") })`
+                ) : "00:00"
+              }</Text>
           </View>
         </View>
 
@@ -186,6 +196,7 @@ const MusicPlayer = () => {
             <Ionicons name='play-skip-forward-outline' size={35} color="#FFD369"></Ionicons>
           </TouchableOpacity>
         </View>
+
       </View>
       <View style={styles.footer}>
         <View style={styles.iconWrapper}>
